@@ -1,2 +1,4 @@
-minCycle= 00:01:00
-countActiveInterrupts= False
+What's the minimum cycling time for it to count? = 00:01:00
+Count cycle interrupts if they don't make the machine inactive? = False
+Ignore the following cycle interruptions:
+Auto Purge completed

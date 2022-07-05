@@ -48,7 +48,7 @@ def analyze():
             runTime += eventList[i].getLastDuration()
         
         #Counting up problems
-        elif (type(eventList[i]) == CycleInterruptEvent and (countActiveInterrupts or eventList[i].getDscrp().__contains__("Inactive"))):
+        elif (type(eventList[i]) == CycleInterruptEvent and (not cycleBlackList.__contains__(eventList[i].getReason())) and (countActiveInterrupts or eventList[i].getDscrp().__contains__("Inactive"))):
             problemList.append(eventList[i].getReason())
     
     #Writing analytic data:
@@ -86,8 +86,12 @@ def analyze():
 #Read config
 conf = open("config.txt", "r")
 lines = conf.readlines()
-minCycle = datetime.strptime("01-01-0001 " + lines[0].split(" ")[1].replace("\n", ""), "%d-%m-%Y %H:%M:%S") - datetime.strptime("01-01-0001 00:00:00", "%d-%m-%Y %H:%M:%S")
-countActiveInterrupts = (lines[1].split(" ")[1] == "True")
+minCycle = datetime.strptime("01-01-0001 " + lines[0].split(" = ")[1].replace("\n", ""), "%d-%m-%Y %H:%M:%S") - datetime.strptime("01-01-0001 00:00:00", "%d-%m-%Y %H:%M:%S")
+countActiveInterrupts = (lines[1].split(" = ")[1] == "True")
+cycleBlackList = []
+if (len(lines) > 3):
+    for i in range(3, len(lines)):
+        cycleBlackList.append(lines[i])
 
 #Constructing the control window
 mainWin = Tk()
