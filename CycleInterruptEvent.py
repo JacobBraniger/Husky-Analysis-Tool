@@ -25,21 +25,33 @@ class CycleInterruptEvent(HuskEvent):
     activeTime = None #the time that the previous state started running, a datetime object
     lastDuration = timedelta(0) #the time that the previous state was active for
 
-    def __init__(self, dateTime, type, source, description):
+    def __init__(self, dateTime, type, source, description, newFormat = False):
         HuskEvent.__init__(self, dateTime, type, source, description)
         splits = self.dscrp.split(' [', maxsplit=1)
         self.reason = splits[0]
 
         #Replacing metal in conveyor with the true reason
-        if (self.reason == " Metal In Conveyor"):
-            self.reason = " Hopper Full(Metal In Conveyor)"
-        
+        if (self.reason == "Metal In Conveyor"):
+            self.reason = "Hopper Full(Metal In Conveyor)"
+
         #not all cycle interruptions stop the machine. Only add activeTime and lastDuration if the interruption ends the previous state
-        if (splits[1].startswith('Inactive')):
-            thing = splits[1].replace('Inactive (active time was ', '')
-            thing = thing.replace(')]', '')
-            self.activeTime = datetime.strptime(thing, "%m/%d/%Y %I:%M:%S %p")
-            self.lastDuration = (self.time - self.activeTime)
+        if(splits[1].startswith('Inactive')):
+            if(newFormat):
+                splits = splits[1].split('Inactive (active time was ')
+                thing = splits[1].split('.')[0]
+                self.activeTime = datetime.strptime(thing, "%Y-%m-%d %H:%M:%S")
+                self.lastDuration = (self.time - self.activeTime)
+            
+            else:
+                thing = splits[1].replace('Inactive (active time was ', '')
+                thing = thing.replace(')]', '')
+                self.activeTime = datetime.strptime(thing, "%m/%d/%Y %I:%M:%S %p")
+                self.lastDuration = (self.time - self.activeTime)
+
+    @classmethod
+    def fiveLines(cls, date, time, type, source, description):
+        dateTime = date + " " + time.split(".")[0]
+        return cls(dateTime, type, source, description, True)
 
     def __str__(self):
         return "_._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._._\nCycle interruption for " + self.reason + " at " + self.time.strftime("%m/%d/%Y %I:%M:%S %p")

@@ -7,6 +7,62 @@ from tkinter import *
 from tkinter import filedialog
 from collections import Counter
 
+def func1(df):
+    #Populating eventList with HuskEvent objects
+    eventList = [] #A list of all events
+    for i in range(len(df)):
+        #making temporary list to hold and manipulate each row of data
+        attributes = [df.at[i, 'Date/Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']]
+        for i in range(1, len(attributes)):
+            if (attributes[i][0] == ' '):
+                attributes[i] = attributes[i].replace(' ', '', 1)
+
+        #Adding Machine Events
+        if (attributes[1] == 'Machine'):
+            eventList.append(MachineEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+
+        #Adding Cycle Interruptions
+        elif (attributes[1] == 'Cycle Interruption'):
+            eventList.append(CycleInterruptEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+            #
+            if(type(eventList[i-1]) == MachineEvent):
+                if(eventList[i-1].getType == "Cycle Interruption"):
+                    eventList[i-1].setReason(eventList[i].getReason)
+
+        #If none of the above types, makes a generic event
+        else:
+            eventList.append(HuskEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+    #end loop
+    return eventList
+
+def func2(df):
+    #Populating eventList with HuskEvent objects
+    eventList = [] #A list of all events
+    for i in range(len(df)):
+        #making temporary list to hold and manipulate each row of data
+        attributes = [df.at[i, 'Date/Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']]
+        for i in attributes:
+            if (attributes[i][0] == ' '):
+                attributes[i].replace(' ', '', 1)
+
+        #Adding Machine Events
+        if (df.at[i, 'Type'] == 'Machine'):
+            eventList.append(MachineEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+
+        #Adding Cycle Interruptions
+        elif (df.at[i, 'Type'] == 'Cycle Interruption'):
+            eventList.append(CycleInterruptEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+            #
+            if(type(eventList[i-1]) == MachineEvent):
+                if(eventList[i-1].getType == "Cycle Interruption"):
+                    eventList[i-1].setReason(eventList[i].getReason)
+
+        #If none of the above types, makes a generic event
+        else:
+            eventList.append(HuskEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+    #end loop
+    return eventList
+
 def analyze():
     #Making new text file to write to
     f = open(e.get() + ".txt", "w")
@@ -15,26 +71,7 @@ def analyze():
     workbook = filedialog.askopenfilename(parent=mainWin, initialdir= "/", title='Please select a directory')
     df = pandas.read_excel(workbook)
 
-    eventList = [] #A list of all events
-
-    #Populating eventList with HuskEvent objects
-    for i in range(len(df)):
-        #Adding Machine Events
-        if (df.at[i, 'Type'] == ' Machine'):
-            eventList.append(MachineEvent(df.at[i, 'Date/Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']))
-
-        #Adding Cycle Interruptions
-        elif (df.at[i, 'Type'] == ' Cycle Interruption'):
-            eventList.append(CycleInterruptEvent(df.at[i, 'Date/Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']))
-            #
-            if(type(eventList[i-1]) == MachineEvent):
-                if(eventList[i-1].getType == " Cycle Interruption"):
-                    eventList[i-1].setReason(eventList[i].getReason)
-
-        #If none of the above types, makes a generic event
-        else:
-            eventList.append(HuskEvent(df.at[i, 'Date/Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']))
-    #end loop
+    eventList = func1(df)
 
     runTime = timedelta(0) #the total time that the machine has been running on auto cycle over the data period. Only counts if it was running for more than a minute
     problemList = [] #Counts up all reasons of Cycle Interruptions
