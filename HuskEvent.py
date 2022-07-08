@@ -21,11 +21,16 @@ class HuskEvent:
     sorc = "" #The source of the event
     dscrp = "" #The full descrption of the event. This is often broken down further by inheriting clases
 
-    def __init__(self, time, type, source, description):
+    def __init__(self, dateTime, type, source, description):
         self.type = type
-        self.time = datetime.strptime(str(time), "%Y-%m-%d %H:%M:%S")
+        self.time = datetime.strptime(str(dateTime), "%Y-%m-%d %H:%M:%S")
         self.sorc = source
         self.dscrp = description
+    
+    @classmethod
+    def fiveLines(cls, date, time, type, source, description):
+        dateTime = str(date).split(' ')[0] + ' ' + str(time).split('.')[0]
+        return cls(dateTime, type, source, description)
 
     def __str__(self) -> str:
         pass

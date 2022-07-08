@@ -27,22 +27,33 @@ class MachineEvent(HuskEvent):
     stepTime = None #the time that the previous state started running, a datetime object
     lastDuration = timedelta(0) #the time that the previous state was active for
 
-    def __init__(self, dateTime, type, source, description):
+    def __init__(self, dateTime, type, source, description, newFormat = False):
         HuskEvent.__init__(self, dateTime, type, source, description)
         #handles init differently if the machine was off
-        if (self.dscrp.startswith(" Initial State")):
-            self.state = " Idle/Manual"
+        if (self.dscrp.startswith("Initial State")):
+            self.state = "Idle/Manual"
             self.prevState = "Off"
+            return
+
+        splits = self.dscrp.split(' from  ', maxsplit=1)
+        self.state = splits[0]
+        splits = splits[1].split(' (started ', maxsplit=1)
+        self.prevState = splits[0]
         
-        #standard init
+        if(newFormat):
+            splits = splits[1].split('.')
+            self.stepTime = datetime.strptime(splits[0], "%Y-%m-%d %H:%M:%S")
         else:
-            splits = self.dscrp.split(' from  ', maxsplit=1)
-            self.state = splits[0]
-            splits = splits[1].split(' (started ', maxsplit=1)
-            self.prevState = splits[0]
             splits = splits[1].split(')')
             self.stepTime = datetime.strptime(splits[0], "%m/%d/%Y %I:%M:%S %p")
-            self.lastDuration = (self.time - self.stepTime)
+        self.lastDuration = self.time - self.stepTime
+        
+
+    @classmethod
+    def fiveLines(cls, date, time, type, source, description):
+        dateTime = str(date).split(' ')[0] + ' ' + str(time).split('.')[0]
+        return cls(dateTime, type, source, description, True)
+
 
     def __str__(self) -> str:
         #handles str differently if the machine was off
