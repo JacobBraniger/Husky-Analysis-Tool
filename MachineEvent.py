@@ -30,7 +30,7 @@ class MachineEvent(HuskEvent):
     def __init__(self, dateTime, type, source, description, newFormat = False):
         HuskEvent.__init__(self, dateTime, type, source, description)
         #handles init differently if the machine was off
-        if (self.dscrp.startswith(" Initial State")):
+        if (self.dscrp.startswith("Initial State")):
             self.state = "Idle/Manual"
             self.prevState = "Off"
             return
@@ -51,7 +51,7 @@ class MachineEvent(HuskEvent):
 
     @classmethod
     def fiveLines(cls, date, time, type, source, description):
-        dateTime = date + " " + time.split(".")[0]
+        dateTime = str(date).split(' ')[0] + ' ' + str(time).split('.')[0]
         return cls(dateTime, type, source, description, True)
 
 

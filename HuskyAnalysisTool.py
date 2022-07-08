@@ -40,18 +40,18 @@ def func2(df):
     eventList = [] #A list of all events
     for i in range(len(df)):
         #making temporary list to hold and manipulate each row of data
-        attributes = [df.at[i, 'Date/Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']]
-        for i in attributes:
-            if (attributes[i][0] == ' '):
-                attributes[i].replace(' ', '', 1)
+        attributes = [df.at[i, 'Date'], df.at[i, 'Time'], df.at[i, 'Type'], df.at[i, 'Source'], df.at[i, 'Description']]
+
+        if (" - " in attributes[2]):
+            attributes[2] = attributes[2].split(' - ')[0]
 
         #Adding Machine Events
-        if (df.at[i, 'Type'] == 'Machine'):
-            eventList.append(MachineEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+        if (attributes[2] == 'Machine'):
+            eventList.append(MachineEvent.fiveLines(attributes[0], attributes[1], attributes[2], attributes[3], attributes[4]))
 
         #Adding Cycle Interruptions
-        elif (df.at[i, 'Type'] == 'Cycle Interruption'):
-            eventList.append(CycleInterruptEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+        elif (attributes[2] == 'Cycle Interruption'):
+            eventList.append(CycleInterruptEvent.fiveLines(attributes[0], attributes[1], attributes[2], attributes[3], attributes[4]))
             #
             if(type(eventList[i-1]) == MachineEvent):
                 if(eventList[i-1].getType == "Cycle Interruption"):
@@ -59,7 +59,7 @@ def func2(df):
 
         #If none of the above types, makes a generic event
         else:
-            eventList.append(HuskEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
+            eventList.append(HuskEvent.fiveLines(attributes[0], attributes[1], attributes[2], attributes[3], attributes[4]))
     #end loop
     return eventList
 
@@ -71,7 +71,10 @@ def analyze():
     workbook = filedialog.askopenfilename(parent=mainWin, initialdir= "/", title='Please select a directory')
     df = pandas.read_excel(workbook)
 
-    eventList = func1(df)
+    if (len(df.columns) == 4):
+        eventList = func1(df)
+    elif (len(df.columns) == 5):
+        eventList = func2(df)
 
     runTime = timedelta(0) #the total time that the machine has been running on auto cycle over the data period. Only counts if it was running for more than a minute
     problemList = [] #Counts up all reasons of Cycle Interruptions
@@ -102,17 +105,17 @@ def analyze():
         f.write(str(a) + ": " + str(b) + ", " + str(round(b/len(problemList)*100, 2)) + "%\n")
         #end
     
-    f.write("\n")
-    #Writing log to file
-    for i in range(len(eventList)-1):
+    # f.write("\n")
+    # #Writing log to file
+    # for i in range(len(eventList)-1):
 
-        #Writing Machine Events to f
-        if (type(eventList[i]) == MachineEvent):
-            f.write(str(eventList[i]) + "\n")
+    #     #Writing Machine Events to f
+    #     if (type(eventList[i]) == MachineEvent):
+    #         f.write(str(eventList[i]) + "\n")
         
-        #Writing Cycle Interruptions
-        elif (type(eventList[i]) == CycleInterruptEvent):
-            f.write(str(eventList[i]) + "\n")
+    #     #Writing Cycle Interruptions
+    #     elif (type(eventList[i]) == CycleInterruptEvent):
+    #         f.write(str(eventList[i]) + "\n")
 
     f.close #close file
     #Generate message that writing is done
