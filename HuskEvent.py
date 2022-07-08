@@ -29,8 +29,8 @@ class HuskEvent:
     
     @classmethod
     def fiveLines(cls, date, time, type, source, description):
-        dateTime = date + " " + time.split(".")[0]
-        return cls(dateTime, type, source, description, True)
+        dateTime = str(date).split(' ')[0] + ' ' + str(time).split('.')[0]
+        return cls(dateTime, type, source, description)
 
     def __str__(self) -> str:
         pass
