@@ -1,7 +1,8 @@
+from numpy import append
 from HuskEvent import HuskEvent
 from MachineEvent import MachineEvent
 from CycleInterruptEvent import CycleInterruptEvent
-import pandas
+import pandas as pd
 from datetime import *
 from tkinter import *
 from tkinter import filedialog
@@ -25,9 +26,9 @@ def func1(df):
         elif (attributes[1] == 'Cycle Interruption'):
             eventList.append(CycleInterruptEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
             #
-            if(type(eventList[i-1]) == MachineEvent):
-                if(eventList[i-1].getType == "Cycle Interruption"):
-                    eventList[i-1].setReason(eventList[i].getReason)
+            if(len(eventList) >= 2 and type(eventList[-2]) == MachineEvent):
+                if(eventList[-2].getType == "Cycle Interruption"):
+                    eventList[-2].setReason(eventList[i].getReason)
 
         #If none of the above types, makes a generic event
         else:
@@ -69,7 +70,7 @@ def analyze():
     
     #Creating data frame from selected file
     workbook = filedialog.askopenfilename(parent=mainWin, initialdir= "/", title='Please select a directory')
-    df = pandas.read_excel(workbook)
+    df = pd.read_excel(workbook)
 
     if (len(df.columns) == 4):
         eventList = func1(df)
@@ -104,18 +105,30 @@ def analyze():
     for a, b in new_vals:
         f.write(str(a) + ": " + str(b) + ", " + str(round(b/len(problemList)*100, 2)) + "%\n")
         #end
-    
-    # f.write("\n")
-    # #Writing log to file
-    # for i in range(len(eventList)-1):
+    f.write("\n")
+    #Writing log to file
+    for i in range(len(eventList)-1):
 
-    #     #Writing Machine Events to f
-    #     if (type(eventList[i]) == MachineEvent):
-    #         f.write(str(eventList[i]) + "\n")
+        #Writing Machine Events to f
+        if (type(eventList[i]) == MachineEvent):
+            f.write(str(eventList[i]) + "\n")
         
-    #     #Writing Cycle Interruptions
-    #     elif (type(eventList[i]) == CycleInterruptEvent):
-    #         f.write(str(eventList[i]) + "\n")
+        #Writing Cycle Interruptions
+        elif (type(eventList[i]) == CycleInterruptEvent):
+            f.write(str(eventList[i]) + "\n")
+
+    param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Total Cycle Interruptions']
+    amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), str(round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", str(len(problemList))]
+    new_vals = Counter(problemList).most_common() #Makes new counter and counts up the Cycle Interruption reasons
+    new_vals = new_vals[::1] #this sorts the list in descending order
+    for a, b in new_vals:
+        param.append(str(a))
+        amount.append(b)
+        #end
+
+    thisDict = {'Parameter': param, 'Amount': amount}
+    output = pd.DataFrame(thisDict)
+    output.to_excel(e.get() + '.xlsx', index=False)
 
     f.close #close file
     #Generate message that writing is done
