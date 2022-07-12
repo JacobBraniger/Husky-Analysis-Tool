@@ -1,4 +1,3 @@
-from numpy import append
 from HuskEvent import HuskEvent
 from MachineEvent import MachineEvent
 from CycleInterruptEvent import CycleInterruptEvent
@@ -35,6 +34,7 @@ def func1(df):
             eventList.append(HuskEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
     #end loop
     return eventList
+    #end func1()
 
 def func2(df):
     #Populating eventList with HuskEvent objects
@@ -63,6 +63,7 @@ def func2(df):
             eventList.append(HuskEvent.fiveLines(attributes[0], attributes[1], attributes[2], attributes[3], attributes[4]))
     #end loop
     return eventList
+    #end func2()
 
 def analyze():
     #Making new text file to write to
