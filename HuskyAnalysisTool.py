@@ -66,17 +66,24 @@ def func2(df):
     #end func2()
 
 def analyze():
-    #Making new text file to write to
-    f = open(e.get() + ".txt", "w")
-    
     #Creating data frame from selected file
     workbook = filedialog.askopenfilename(parent=mainWin, initialdir= "/", title='Please select a directory')
     df = pd.read_excel(workbook)
 
-    if (len(df.columns) == 4):
-        eventList = func1(df)
-    elif (len(df.columns) == 5):
-        eventList = func2(df)
+    try:
+        if (len(df.columns) == 4):
+            eventList = func1(df)
+        elif (len(df.columns) == 5):
+            eventList = func2(df)
+        else:
+            raise Exception
+    except Exception:
+        myLabel = Label(mainWin, text = '!!!File has abnormal amount of columns. Please delete events with excess data!!!', pady=5, fg='red')
+        myLabel.pack()
+        return
+
+    #Making new text file to write to
+    f = open(e.get() + ".txt", "w")
 
     runTime = timedelta(0) #the total time that the machine has been running on auto cycle over the data period. Only counts if it was running for more than a minute
     problemList = [] #Counts up all reasons of Cycle Interruptions
@@ -133,15 +140,18 @@ def analyze():
 
     f.close #close file
     #Generate message that writing is done
-    myLabel = Label(mainWin, text = "Generated " + e.get() + " from " + workbook)
+    myLabel = Label(mainWin, text = "Generated " + e.get() + " from " + workbook, pady=5)
     myLabel.pack()
     #end analyze()
 
 #Read config
 conf = open("config.txt", "r")
 lines = conf.readlines()
+#Define the shortest auto cycle that counts as runtime
 minCycle = datetime.strptime("01-01-0001 " + lines[0].split(" = ")[1].replace("\n", ""), "%d-%m-%Y %H:%M:%S") - datetime.strptime("01-01-0001 00:00:00", "%d-%m-%Y %H:%M:%S")
+#Decide whether to include cycle interruptions marked as "active" in the tally
 countActiveInterrupts = (lines[1].split(" = ")[1] == "True")
+#Read through the blacklist for cycle interruptions to disregard. Used if there's an interrupt that is caused by maintenance, testing, etc.
 cycleBlackList = []
 if (len(lines) > 3):
     for i in range(3, len(lines)):
