@@ -6,6 +6,7 @@ from datetime import *
 from tkinter import *
 from tkinter import filedialog
 from collections import Counter
+from tkinter.filedialog import askdirectory
 
 def func1(df):
     #Populating eventList with HuskEvent objects
@@ -109,7 +110,7 @@ def analyze():
     
     #Writing analytic data:
     #Making new text file to write to
-    f = open(e.get() + ".txt", "w")
+    f = open(askdirectory(title='Select Folder') + e.get() + ".txt", "w")
     param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Total Cycle Interruptions']
     amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), str(round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", str(len(problemList))]
     #Writing total runtime
@@ -128,7 +129,7 @@ def analyze():
         #end
     thisDict = {'Parameter': param, 'Amount': amount}
     output = pd.DataFrame(thisDict)
-    output.to_excel(e.get() + '.xlsx', index=False)
+    output.to_excel(askdirectory(title='Select Folder') + e.get() + '.xlsx', index=False)
 
     f.write("\n")
     #Writing log to file
