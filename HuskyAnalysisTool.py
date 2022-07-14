@@ -67,20 +67,33 @@ def func2(df):
     #end func2()
 
 def analyze():
+    try:
+        if (outputLoc == ''):
+            myLabel = Label(mainWin, text = '!!!Please select an output location!!!', fg='red', justify='left')
+            myLabel.pack()
+            return
+    except Exception:
+        myLabel = Label(mainWin, text = '!!!Please select an output location!!!', fg='red', justify='left')
+        myLabel.pack()
+        return
+
     #Creating data frame from selected file
     try:
-        workbook = filedialog.askopenfilename(parent=mainWin, initialdir= "/", title='Please select a directory')
-        df = pd.read_excel(workbook)
+        df = pd.read_excel(inputFile)
     except FileNotFoundError:
-        myLabel = Label(mainWin, text = '!!!File was not properly defined!!!', pady=5, fg='red')
+        myLabel = Label(mainWin, text = '!!!File was not properly defined!!!', fg='red', justify='left')
+        myLabel.pack()
+        return
+    except NameError:
+        myLabel = Label(mainWin, text = '!!!File was not properly defined!!!', fg='red', justify='left')
         myLabel.pack()
         return
     except ValueError:
-        myLabel = Label(mainWin, text = '!!!Not an excel file of the correct version. Please choose a .xlsx file!!!', pady=5, fg='red')
+        myLabel = Label(mainWin, text = '!!!Not an excel file of the correct version. Please choose a .xlsx file!!!', fg='red', justify='left')
         myLabel.pack()
         return
     except Exception:
-        myLabel = Label(mainWin, text = '!!!Something unexplicably went wrong!!!', pady=5, fg='red')
+        myLabel = Label(mainWin, text = '!!!Something inexplicably went wrong!!!', fg='red', justify='left')
         myLabel.pack()
         return
 
@@ -89,7 +102,7 @@ def analyze():
     elif (len(df.columns) == 5):
         eventList = func2(df)
     else:
-        myLabel = Label(mainWin, text = '!!!File has abnormal amount of columns. Please delete events with excess data!!!', pady=5, fg='red')
+        myLabel = Label(mainWin, text = '!!!File has abnormal amount of columns. Please delete events with excess data!!!', pady=5, fg='red', justify='left')
         myLabel.pack()
         return
 
@@ -110,7 +123,7 @@ def analyze():
     
     #Writing analytic data:
     #Making new text file to write to
-    f = open(askdirectory(title='Select Folder') + e.get() + ".txt", "w")
+    f = open(outputLoc + nameBox.get() + ".txt", "w")
     param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Total Cycle Interruptions']
     amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), str(round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", str(len(problemList))]
     #Writing total runtime
@@ -129,7 +142,7 @@ def analyze():
         #end
     thisDict = {'Parameter': param, 'Amount': amount}
     output = pd.DataFrame(thisDict)
-    output.to_excel(askdirectory(title='Select Folder') + e.get() + '.xlsx', index=False)
+    output.to_excel(outputLoc + nameBox.get() + '.xlsx', index=False)
 
     f.write("\n")
     #Writing log to file
@@ -145,8 +158,9 @@ def analyze():
     f.close #close file    
 
     #Generate message that writing is done
-    myLabel = Label(mainWin, text = "Generated " + e.get() + " from " + workbook, pady=5)
+    myLabel = Label(mainWin, text = "Generated " + nameBox.get() + " from " + inputFile, justify='left')
     myLabel.pack()
+    return
     #end analyze()
 
 #Read config
@@ -164,25 +178,44 @@ if (len(lines) > 3):
 
 #Constructing the control window
 mainWin = Tk()
+mainWin.grid()
 mainWin.title("Greencastle Machine Data Analysis Tool")
-mainWin.geometry("500x200")
+mainWin.geometry("550x300")
 mainWin.sourceFile = ''
+myLabel = Label(mainWin, text = '', fg='red', pady =  55, justify='left')
+myLabel.pack()
 
 #Constructing the file name entry box
-e = Entry(mainWin, width=50)
-e.pack()
-e.insert(0, "Name Your Output File")
+inputBox = Entry(mainWin, width=67)
+inputBox.insert(0, "File To Analyze")
+inputBox.place(x = 10, y = 12.5)
+
+def chooseInput(Box = inputBox):
+    global inputFile
+    inputFile = filedialog.askopenfilename(parent=mainWin, initialdir= "/", title='Please select a directory')
+    inputBox.delete(0, 'end')
+    Box.insert(0, inputFile)
+myButton1 = Button(mainWin, text = "Choose File", command = chooseInput)
+myButton1.place(x = 430, y = 10)
+
+outputBox = Entry(mainWin, width=67)
+outputBox.insert(0, "Output Folder")
+outputBox.place(x = 10, y = 52.5)
+
+def chooseFolder(Box = outputBox):
+    global outputLoc
+    outputLoc = askdirectory(title='Select Folder')
+    Box.delete(0, 'end')
+    Box.insert(0, outputLoc)
+myButton2 = Button(mainWin, text = "Choose Folder", command = chooseFolder)
+myButton2.place(x = 430, y = 50)
+
+nameBox = Entry(mainWin, width=67)
+nameBox.insert(0, "Name Your Output File")
+nameBox.place(x = 10, y = 92.5)
 
 #analyze button
-def myClick():
-    analyze()
-myButton1 = Button(mainWin, text = "Choose Workbook to Analyze", command = myClick)
-myButton1.pack()
-
-#quit button
-def closeClick():
-    mainWin.destroy()
-myButton2 = Button(mainWin, text = "Quit", command = closeClick)
-myButton2.pack()
+myButton3 = Button(mainWin, text = "Analyze!", command = analyze)
+myButton3.place(x = 430, y = 90)
 
 mainWin.mainloop()
