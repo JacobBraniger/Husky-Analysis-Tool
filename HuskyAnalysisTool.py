@@ -14,6 +14,7 @@ def read4Lines(data):
     for i in range(len(data)):
         #making temporary list to hold and manipulate each row of data
         attributes = [data.at[i, 'Date/Time'], data.at[i, 'Type'], data.at[i, 'Source'], data.at[i, 'Description']]
+        #Removing spaces at the start of each data point. This is necessary because the titles are delineated with ",", but the data with ", "
         for j in range(1, len(attributes)):
             if (attributes[j][0] == ' '):
                 attributes[j] = attributes[j].replace(' ', '', 1)
@@ -25,7 +26,7 @@ def read4Lines(data):
         #Adding Cycle Interruptions
         elif (attributes[1] == 'Cycle Interruption'):
             eventList.append(CycleInterruptEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
-            #
+            #Adding the reason for the stoppage to the following machine event
             if(len(eventList) >= 2 and type(eventList[i-1]) == MachineEvent):
                 if(eventList[i-1].getPrevState() == "Cycle Interruption"):
                     eventList[i-1].setReason(eventList[i].getReason())
@@ -33,7 +34,6 @@ def read4Lines(data):
         #If none of the above types, makes a generic event
         else:
             eventList.append(HuskEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
-    #end loop
     return eventList
     #end read4Lines()
 
@@ -43,7 +43,7 @@ def read5Lines(data):
     for i in range(len(data)):
         #making temporary list to hold and manipulate each row of data
         attributes = [data.at[i, 'Date'], data.at[i, 'Time'], data.at[i, 'Type'], data.at[i, 'Source'], data.at[i, 'Description']]
-
+        #Taking off the tag on some event types
         if (" - " in attributes[2]):
             attributes[2] = attributes[2].split(' - ')[0]
 
@@ -61,7 +61,6 @@ def read5Lines(data):
         #If none of the above types, makes a generic event
         else:
             eventList.append(HuskEvent.fiveLines(attributes[0], attributes[1], attributes[2], attributes[3], attributes[4]))
-    #end loop
     return eventList
     #end read5Lines()
 
@@ -117,7 +116,7 @@ def analyze(inputFile, outputLoc):
         elif (type(eventList[i]) == CycleInterruptEvent and (not cycleBlackList.__contains__(eventList[i].getReason())) and (countActiveInterrupts or eventList[i].getDscrp().__contains__("Inactive"))):
             problemList.append(eventList[i].getReason())
     
-    
+    #Make sets of strings to use as elements in excel file
     param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Total Cycle Interruptions']
     amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), str(round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", str(len(problemList))]
     new_vals = Counter(problemList).most_common() #Makes new counter and counts up the Cycle Interruption reasons
