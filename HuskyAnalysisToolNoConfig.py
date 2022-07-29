@@ -118,7 +118,7 @@ def analyze(inputFile, outputLoc):
     
     #Make sets of strings to use as elements in excel file
     param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Total Cycle Interruptions']
-    amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), str(round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", str(len(problemList))]
+    amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), (round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", (len(problemList))]
     new_vals = Counter(problemList).most_common() #Makes new counter and counts up the Cycle Interruption reasons
     new_vals = new_vals[::1] #this sorts the list in descending order
     for a, b in new_vals:
