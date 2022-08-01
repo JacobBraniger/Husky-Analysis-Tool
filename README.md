@@ -10,3 +10,8 @@ Once the data is prepped, run the .exe file.
 Use the buttons to search for your data (the excel workbook) and choose a place for the program to out the analysis. Type a name into the bottom text box, and the press analyze. When finished, the program will write a message saying it's done.
 If you want to analyze more files, just select the next one with the top button, and type a new name into the box. Press analyze again to start the next analysis.
 Close the program when you're done.
+# Demo
+
+
+https://user-images.githubusercontent.com/46425131/182157865-7341513e-a004-428b-a637-1b313b60d520.mp4
+
