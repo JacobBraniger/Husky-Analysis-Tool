@@ -4,11 +4,14 @@ from CycleInterruptEvent import CycleInterruptEvent
 import pandas as pd
 from datetime import *
 from tkinter import *
-from tkinter import filedialog
 from collections import Counter
-from tkinter.filedialog import askdirectory
 
 def read4Lines(data):
+    """
+    read4Lines(data)
+
+    Takes in the type of data produced by the older types of Husky machines.
+    """
     #Populating eventList with HuskEvent objects
     eventList = [] #A list of all events
     for i in range(len(data)):
@@ -38,6 +41,11 @@ def read4Lines(data):
     #end read4Lines()
 
 def read5Lines(data):
+    """
+    read5Lines(data)
+
+    Takes in the type of data produced by the newer types of Husky machines. This type of output contains 5 lines of data, splitting the date and time into two columns.
+    """
     #Populating eventList with HuskEvent objects
     eventList = [] #A list of all events
     for i in range(len(data)):
@@ -65,6 +73,18 @@ def read5Lines(data):
     #end read5Lines()
 
 def analyze(mainWin, nameBox, inputFile, outputLoc, config):
+    """
+    analyze(mainWin, nameBox, inputfile, outputLoc, config)
+
+    Analyzes a .xlsx file, and makes a new .xlsx file with the analysis. Outputs a message when done.
+
+    Parameters:
+        mainWin(Tk): the tkinter window to write the completion message on.
+        nameBox(Entry): the input box to draw the output file name file from.
+        inputfile(string): the file path of the file to analyze.
+        outputLoc(string): the path of the folder to put the new file in.
+        config(List): a list of different configuration settings.
+    """
     #Turn excel file into a DataFrame
     try:
         data = pd.read_excel(inputFile)
