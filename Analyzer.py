@@ -10,7 +10,7 @@ def read4Lines(data):
     """
     read4Lines(data)
 
-    Takes in the type of data produced by the older types of Husky machines.
+    Takes in the type of data produced by the older types of Husky machines and converts it to a simple list made of HuskEvent objects.
     """
     #Populating eventList with HuskEvent objects
     eventList = [] #A list of all events
@@ -44,7 +44,7 @@ def read5Lines(data):
     """
     read5Lines(data)
 
-    Takes in the type of data produced by the newer types of Husky machines. This type of output contains 5 lines of data, splitting the date and time into two columns.
+    Takes in the type of data produced by the newer types of Husky machines and converts it to a simple list made of HuskEvent objects. This type of output contains 5 lines of data, splitting the date and time into two columns.
     """
     #Populating eventList with HuskEvent objects
     eventList = [] #A list of all events
@@ -77,6 +77,20 @@ def analyze(mainWin, nameBox, inputFile, outputLoc, config):
     analyze(mainWin, nameBox, inputfile, outputLoc, config)
 
     Analyzes a .xlsx file, and makes a new .xlsx file with the analysis. Outputs a message when done.
+
+    The analysis contains the following metrics:
+        Start Time:
+            The time of the very first event used in the analysis.
+        End Time:
+            The time of the very last event used in the analysis.
+        Run Time:
+            The total amount of time spent in the Auto Cycling state. However, an event of Auto Cycling only counts if it's longer than the minimum length defined in the config.
+        Availibility:
+            The percent of the time between the start and end times the was spent running.
+        Total Cycle Interruptions:
+            The total number of cycle interruptions in the time period. May or may not include interruptions marked as Inactive, depending on the config.
+        Cycle Interruption Breakdown:
+            A count of each type of cycle interruption, organized in descending order.
 
     Parameters:
         mainWin(Tk): the tkinter window to write the completion message on.
