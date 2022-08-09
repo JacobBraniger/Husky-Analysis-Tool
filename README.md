@@ -5,7 +5,7 @@ There are two versions. One that includes a large directory with a config file t
 # Using the Software
 First, download the event log file from the Husky Machine.
 Next, convert the file into an excel workbook (*.xlsx).
-Delete any rows of data that have more columns of data than there are headers. To find these, click on the column to the righ of the last header, go tot the data tab, and hit filter. Then open the filter dropdown menu and uncheck (Blanks). Delete all remaining rows, if there are any. These are unnecessary for the anlysis and will make the file unreadable. Make sure not to mess with anything else, and don't forget to save.
+Delete any rows of data that have more columns of data than there are headers. To find these, click on the column to the right of the last header, go to the data tab, and hit filter. Then open the filter dropdown menu and uncheck (Blanks). Delete all remaining rows, if there are any. These are unnecessary for the anlysis and will make the file unreadable. Make sure not to mess with anything else, and don't forget to save.
 Once the data is prepped, run the .exe file.
 Use the buttons to search for your data (the excel workbook) and choose a place for the program to out the analysis. Type a name into the bottom text box, and the press analyze. When finished, the program will write a message saying it's done.
 If you want to analyze more files, just select the next one with the top button, and type a new name into the box. Press analyze again to start the next analysis.

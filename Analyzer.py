@@ -87,6 +87,11 @@ def analyze(mainWin, nameBox, inputFile, outputLoc, config):
             The total amount of time spent in the Auto Cycling state. However, an event of Auto Cycling only counts if it's longer than the minimum length defined in the config.
         Availibility:
             The percent of the time between the start and end times the was spent running.
+        Part Interferene:
+            The amount of part interferences.
+        Hopper Full (Metal In Conveyor)
+            The amount of hopper full issues.
+        ~Blank Row~
         Total Cycle Interruptions:
             The total number of cycle interruptions in the time period. May or may not include interruptions marked as Inactive, depending on the config.
         Cycle Interruption Breakdown:
