@@ -4,11 +4,14 @@ from CycleInterruptEvent import CycleInterruptEvent
 import pandas as pd
 from datetime import *
 from tkinter import *
-from tkinter import filedialog
 from collections import Counter
-from tkinter.filedialog import askdirectory
 
 def read4Lines(data):
+    """
+    read4Lines(data)
+
+    Takes in the type of data produced by the older types of Husky machines and converts it to a simple list made of HuskEvent objects.
+    """
     #Populating eventList with HuskEvent objects
     eventList = [] #A list of all events
     for i in range(len(data)):
@@ -38,6 +41,11 @@ def read4Lines(data):
     #end read4Lines()
 
 def read5Lines(data):
+    """
+    read5Lines(data)
+
+    Takes in the type of data produced by the newer types of Husky machines and converts it to a simple list made of HuskEvent objects. This type of output contains 5 lines of data, splitting the date and time into two columns.
+    """
     #Populating eventList with HuskEvent objects
     eventList = [] #A list of all events
     for i in range(len(data)):
@@ -65,6 +73,32 @@ def read5Lines(data):
     #end read5Lines()
 
 def analyze(mainWin, nameBox, inputFile, outputLoc, config):
+    """
+    analyze(mainWin, nameBox, inputfile, outputLoc, config)
+
+    Analyzes a .xlsx file, and makes a new .xlsx file with the analysis. Outputs a message when done.
+
+    The analysis contains the following metrics:
+        Start Time:
+            The time of the very first event used in the analysis.
+        End Time:
+            The time of the very last event used in the analysis.
+        Run Time:
+            The total amount of time spent in the Auto Cycling state. However, an event of Auto Cycling only counts if it's longer than the minimum length defined in the config.
+        Availibility:
+            The percent of the time between the start and end times the was spent running.
+        Total Cycle Interruptions:
+            The total number of cycle interruptions in the time period. May or may not include interruptions marked as Inactive, depending on the config.
+        Cycle Interruption Breakdown:
+            A count of each type of cycle interruption, organized in descending order.
+
+    Parameters:
+        mainWin(Tk): the tkinter window to write the completion message on.
+        nameBox(Entry): the input box to draw the output file name file from.
+        inputfile(string): the file path of the file to analyze.
+        outputLoc(string): the path of the folder to put the new file in.
+        config(List): a list of different configuration settings.
+    """
     #Turn excel file into a DataFrame
     try:
         data = pd.read_excel(inputFile)
@@ -117,9 +151,10 @@ def analyze(mainWin, nameBox, inputFile, outputLoc, config):
             problemList.append(eventList[i].getReason())
     
     #Make sets of strings to use as elements in excel file
-    param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Total Cycle Interruptions']
-    amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), (round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", (len(problemList))]
-    new_vals = Counter(problemList).most_common() #Makes new counter and counts up the Cycle Interruption reasons
+    param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Part Interference', 'Hopper Full', "", 'Total Cycle Interruptions']
+    issues = Counter(problemList)
+    amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), (round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", issues['Part Interference'], issues['Hopper Full(Metal In Conveyor)'], '', (len(problemList))]
+    new_vals = issues.most_common() #Makes new counter and counts up the Cycle Interruption reasons
     new_vals = new_vals[::1] #this sorts the list in descending order
     for a, b in new_vals:
         param.append(str(a))

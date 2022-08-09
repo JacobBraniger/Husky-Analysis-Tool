@@ -33,8 +33,10 @@ class CycleInterruptEvent(HuskEvent):
         #Replacing metal in conveyor with the true reason
         if (self.reason == "Metal In Conveyor"):
             self.reason = "Hopper Full(Metal In Conveyor)"
+        elif (self.reason.startswith("Hopper full")):
+            self.reason = "Hopper Full(Metal In Conveyor)"
 
-        #not all cycle interruptions stop the machine. Only add activeTime and lastDuration if the interruption ends the previous state
+        #Not all cycle interruptions stop the machine. Only add activeTime and lastDuration if the interruption ends the previous state
         if(splits[1].startswith('Inactive')):
             if(newFormat):
                 splits = splits[1].split('Inactive (active time was ')
