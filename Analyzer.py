@@ -169,34 +169,6 @@ def analyze(mainWin, nameBox, inputFile, outputLoc, config):
     output = pd.DataFrame(thisDict)
     output.to_excel(outputLoc + "/" + nameBox.get() + '.xlsx', index=False)
 
-    # #Writing analytic data:
-    # #Making new text file to write to
-    # f = open(outputLoc + "/" + nameBox.get() + ".txt", "w")
-    # #Writing total runtime
-    # f.write("The total runtime over the period from " + amount[0] + " to " + amount[1] + " was " + amount[2] + " hours.\n")
-    # #Writing availibility
-    # f.write("Availibility: " + amount[3] + ".\n")
-    # #Writing total Cycle Interruptions
-    # f.write("Total Cycle Interruptions: " + amount[4] + ".\n")
-    # #Writing Cycle Interruption breakdown
-    # new_vals = Counter(problemList).most_common() #Makes new counter and counts up the Cycle Interruption reasons
-    # new_vals = new_vals[::1] #this sorts the list in descending order
-    # for a, b in new_vals:
-    #     f.write(str(a) + ": " + str(b) + ", " + str(round(b/len(problemList)*100, 2)) + "%\n")
-    #     #end
-    # f.write("\n")
-    # #Writing log to file
-    # for i in range(len(eventList)-1):
-
-    #     #Writing Machine Events to f
-    #     if (type(eventList[i]) == MachineEvent):
-    #         f.write(str(eventList[i]) + "\n")
-        
-    #     #Writing Cycle Interruptions
-    #     elif (type(eventList[i]) == CycleInterruptEvent):
-    #         f.write(str(eventList[i]) + "\n")
-    # f.close #close file    
-
     #Generate message that writing is done
     myLabel = Label(mainWin, text = "Generated " + nameBox.get() + " from " + inputFile, justify='left')
     myLabel.pack()
