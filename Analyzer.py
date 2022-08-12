@@ -34,7 +34,7 @@ def read4Lines(data):
                 if(eventList[i-1].getPrevState() == "Cycle Interruption"):
                     eventList[i-1].setReason(eventList[i].getReason())
 
-        #If none of the above types, makes a generic event
+        #If none of the above types, make a generic event
         else:
             eventList.append(HuskEvent(attributes[0], attributes[1], attributes[2], attributes[3]))
     return eventList
@@ -66,7 +66,7 @@ def read5Lines(data):
                 if(eventList[i-1].getPrevState() == "Cycle Interruption"):
                     eventList[i-1].setReason(eventList[i].getReason())
 
-        #If none of the above types, makes a generic event
+        #If none of the above types, make a generic event
         else:
             eventList.append(HuskEvent.fiveLines(attributes[0], attributes[1], attributes[2], attributes[3], attributes[4]))
     return eventList
@@ -146,8 +146,8 @@ def analyze(mainWin, nameBox, inputFile, outputLoc, config):
     #Collecting various data from the eventList
     for i in range(len(eventList)-1):
 
-        #Add runtime. this is based on every cycle interruption machine event having a note of what mode it came out of and when that mode was strated. 
-        #Counts up both cycle interruptions and when the machine is put into idle, both only if it was previously in auto mode for more than a minute.
+        #Add runtime. Every machine event has a note of what mode it came out of and when that mode was strated. 
+        #Counts up the total amount of time spent in the auto cycling mode, but only if it was in that state for more than a minute.
         if (type(eventList[i]) == MachineEvent and eventList[i].getPrevState() == "Auto Cycling" and eventList[i].getLastDuration() >= config[0]):
             runTime += eventList[i].getLastDuration()
 
@@ -159,14 +159,14 @@ def analyze(mainWin, nameBox, inputFile, outputLoc, config):
     param = ['Start Time', 'End Time', 'Run Time (hr)', 'Availibility', 'Part Interference', 'Hopper Full', "", 'Total Cycle Interruptions']
     issues = Counter(problemList)
     amount = [eventList[-1].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), eventList[0].getTime().strftime("%m/%d/%Y %I:%M:%S %p"), (round(runTime.total_seconds()/60/60, 3)), str(round(runTime / (eventList[0].getTime() - eventList[-1].getTime())*100, 2)) + "%", issues['Part Interference'], issues['Hopper Full(Metal In Conveyor)'], '', (len(problemList))]
-    new_vals = issues.most_common() #Makes new counter and counts up the Cycle Interruption reasons
-    new_vals = new_vals[::1] #this sorts the list in descending order
-    for a, b in new_vals:
+    sortedIssues = issues.most_common() #Makes new counter and counts up the Cycle Interruption reasons
+    sortedIssues = sortedIssues[::1] #this sorts the list in descending order
+    for a, b in sortedIssues:
         param.append(str(a))
         amount.append(b)
         #end
-    thisDict = {'Parameter': param, 'Amount': amount}
-    output = pd.DataFrame(thisDict)
+    tempDict = {'Parameter': param, 'Amount': amount}
+    output = pd.DataFrame(tempDict)
     output.to_excel(outputLoc + "/" + nameBox.get() + '.xlsx', index=False)
 
     #Generate message that writing is done
