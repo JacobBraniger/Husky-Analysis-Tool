@@ -23,6 +23,7 @@ mainWin = Tk()
 mainWin.title("Greencastle Machine Data Analysis Tool")
 mainWin.geometry("550x300")
 mainWin.sourceFile = ''
+mainWin.iconbitmap("DogFace.ico")
 #This is a buffer that starts the pack command below the following dialog boxes. 
 #This is needed for the error and confirmation messages to not cover the rest of the UI.
 myLabel = Label(mainWin, text = '', fg='red', pady =  55, justify='left')
