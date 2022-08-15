@@ -13,5 +13,4 @@ Close the program when you're done.
 # Demo
 
 
-https://user-images.githubusercontent.com/46425131/182157865-7341513e-a004-428b-a637-1b313b60d520.mp4
-
+https://user-images.githubusercontent.com/46425131/184659639-62cea4e0-8e08-4ced-b7de-1a60e364a034.mp4
