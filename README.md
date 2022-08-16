@@ -1,4 +1,4 @@
-# HuskyConfigTool
+# Husky Analysis Tool
 This is a project to analyze the machine data output of husky plastic injection machines. Developed by Jacob Braniger in the Greencastle, IN location of of the Phoenix packaging company. This application reads a xlsx file created from the event log transfer of the machine, and then creates a new xlsx file detailing the time range of the analysis, the total running time of the machine within the time period, what percent of the total analysis period that is, and a breakdown of the cycle interruptions.
 # How to Download
 There are two versions. One that includes a large directory with a config file to change settings, and one that is just an exe. If you want the standalone exe, just download HuskyAnalysisToolNoConfig.exe. If you want the directory and config, downlad the entire HuskyAnalysisTool folder.
